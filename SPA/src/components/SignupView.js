@@ -43,11 +43,20 @@ export default function SignupView({$target}) {
         "role" : roleVal,
         "mbti" : mbtiVal,
         "id" : personalInfo.length
-      }
-      personalInfo.push(submitInfo);
-      localStorage.setItem("personalInfo",JSON.stringify(personalInfo));
-      if(true) {
+      };
+      var isOk = personalInfo.some(info=> {
+        return info.name===submitInfo.name && info.email === submitInfo.email && info.nickname === submitInfo.nickname;
+      });
+      console.log(isOk);
+      if(!isOk) {
         alert("성공적으로 등록되었습니다");
+        personalInfo.push(submitInfo);
+        localStorage.setItem("personalInfo",JSON.stringify(personalInfo));
+        window.history.pushState('', '', "/web/signup");
+        const urlChange = new CustomEvent("urlChange",{detail: { url: "/web/signup" }});
+        document.dispatchEvent(urlChange);
+      } else {
+        alert("이미 등록된 사용자입니다");
         window.history.pushState('', '', "/web/signup");
         const urlChange = new CustomEvent("urlChange",{detail: { url: "/web/signup" }});
         document.dispatchEvent(urlChange);
