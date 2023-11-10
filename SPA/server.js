@@ -4,13 +4,43 @@ const path = require('path');
 const app = express();
 const port = 5500;
 
+const {Prometheus} = require('./metrics.js');
+
 // 정적 파일 서빙을 위한 미들웨어 (클라이언트 측 코드를 호스팅하기 위해)
 app.use(express.static('src'));
+
+app.get('/metrics', async (req, res) => {
+  try {
+    const { metrics, contentType } = await Prometheus.get();
+    res.set("Content-Type", contentType);
+    res.send(metrics); // 또는 res.json(metrics);
+  } catch (error) {
+    console.error("에러 발생:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+app.get('/metrics/:name', (req, res) => {
+  try {
+    const {name} = req.params;
+    const randomNumber = Math.round(Math.random() * 10);
+    console.info(name, randomNumber);
+    Prometheus.add({name,data:randomNumber})
+    res.send('done');
+  } catch (error) {
+    console.log('에러 발생:',error);
+    res.status(500).send("Internal Server Error");
+  }
+});
 
 // 모든 경로에 대한 요청을 인덱스 HTML로 라우팅
 app.get('*', (req, res) => {
   res.sendFile(path.resolve(__dirname, 'index.html'));
 });
+
+
+
+
 
 // 나머지 서버 설정...
 
