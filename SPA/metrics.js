@@ -26,7 +26,6 @@ const prometheus = () => {
   const add = ({ name, data }) => {
     if (instances[name]) {
       const { type, instance } = instances[name];
-      console.log("name : ",name);
       if (type === 'counter') {
         instance.inc(data);
       } else if (type === 'gauge') {
